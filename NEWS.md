@@ -1,8 +1,14 @@
+## version 6.10.1
+
+### bug fixes
+
+* fixed over-estimated correlation of `cim` for `mixo_(s)pls` objects with single component 
+* margin error in `cim` now handled properly
+* fixed `plotLoadings` error for very long variable names
+
+-------------------------------------------------------------------------------
+
 ## version 6.8.6
-
-### new features / enhancements
-
-* 
 
 ### bug fixes
 
