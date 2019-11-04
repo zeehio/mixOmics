@@ -1,3 +1,11 @@
+## version 6.10.2
+
+### bug fixes
+
+* fix single factor multilevel error in pls
+
+-------------------------------------------------------------------------------
+
 ## version 6.10.1
 
 ### bug fixes
