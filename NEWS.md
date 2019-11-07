@@ -1,8 +1,13 @@
 ## version 6.10.2
 
+### new features / enhancements
+
+* parallel processing on `tune.block.splsda` improved
+* `tune.block.splsda` now supports more distances
+
 ### bug fixes
 
-* fix single factor multilevel error in pls
+* single factor multilevel error in `pls` fixed
 
 -------------------------------------------------------------------------------
 
