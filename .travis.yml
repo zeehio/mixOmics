@@ -4,7 +4,7 @@ sudo: required
 language: r
 cache: packages 
 ## test against bioc-release:
-r: bioc-release
+r: bioc-devel
 
 ## apparently helps linux systems find rgl:
 before_install: 
@@ -19,6 +19,10 @@ warnings_are_errors: false
 ## 'snow' is required by parallel but for some reason not automatically installed
 r_packages: 
   - snow
+  - covr
+
+after_success:
+  - Rscript -e 'covr::codecov()'
 
 git:
   ## clone far back so we can --reset and push --force as far back as we need:
@@ -27,7 +31,8 @@ git:
 ## branches to build over - .travs.yml needs to be present in these branches
 branches:
   only:
-     - RELEASE_3_10
+     - devel
+     - master
 
 ## build notification setup - emails need to be a from a contributor to the package
 notifications:
