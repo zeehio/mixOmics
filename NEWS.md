@@ -7,7 +7,7 @@
 * improvement significance can be custmoised in all `perf` and `tune` functions
 * `perf.block.splsda` is now much faster and supports FORK clusters
 * added option to suppress `auroc` from printing all the AUCs
-* `tune.(s)pls(da)`, `perf.(s)plsda` now support FORK clusters
+* `tune.(s)pls(da)`, `perf.(s)pls(da)` now support FORK clusters
 
 ### bug fixes
 
