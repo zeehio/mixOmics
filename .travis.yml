@@ -33,6 +33,7 @@ branches:
   only:
      - devel
      - master
+     - RELEASE_3_10
 
 ## build notification setup - emails need to be a from a contributor to the package
 notifications:
