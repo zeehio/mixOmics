@@ -55,6 +55,7 @@
 internal_wrapper.mint <- 
   function(X,
            Y,
+           W = NULL,
            study,
            ncomp = 2,
            keepX,
@@ -201,7 +202,7 @@ internal_wrapper.mint <-
     
     #--------------------------------------------------------------------------#
     #-- pls approach ----------------------------------------------------#
-    result = internal_mint.block(A = list(X = X, Y = Y), indY = 2, mode = mode,
+    result = internal_mint.block(A = list(X = X, Y = Y), indY = 2, W = W,  mode = mode,
                                  ncomp = c(ncomp, ncomp), tol = tol, max.iter = max.iter,
                                  design = design, keepA = keepA, scale = scale, scheme = "horst",init="svd",
                                  study = study, misdata = misdata, is.na.A = is.na.A, ind.NA = ind.NA,

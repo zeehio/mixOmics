@@ -87,6 +87,7 @@
 #' @export
 block.splsda <- function(X,
                          Y,
+                         W = NULL,
                          indY,
                          ncomp = 2,
                          keepX,
@@ -144,6 +145,7 @@ block.splsda <- function(X,
     result = internal_wrapper.mint.block(
         X = X,
         Y = Y,
+        W = W,
         indY = indY,
         ncomp = ncomp,
         keepX = keepX,

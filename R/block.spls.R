@@ -45,6 +45,7 @@
 #' @param Y Matrix response for a multivariate regression framework. Data
 #' should be continuous variables (see \code{?block.splsda} for supervised
 #' classification and factor response).
+#' @param W named list of numeric matrices of weights. \code{NA}s are allowed.
 #' @param keepX A named list of same length as X. Each entry is the number of
 #' variables to select in each of the blocks of X for each component. By
 #' default all variables are kept in the model.
@@ -88,6 +89,7 @@
 #' @export
 block.spls = function(X,
                       Y,
+                      W = NULL,
                       indY,
                       ncomp = 2,
                       keepX,
@@ -107,6 +109,7 @@ block.spls = function(X,
     result = internal_wrapper.mint.block(
         X = X,
         Y = Y,
+        W = W,
         indY = indY,
         ncomp = ncomp,
         keepX = keepX,

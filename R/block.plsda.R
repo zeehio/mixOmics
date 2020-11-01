@@ -89,6 +89,7 @@
 #' @export
 block.plsda <- function(X,
                         Y,
+                        W = NULL,
                         indY,
                         ncomp = 2,
                         design,
@@ -144,6 +145,7 @@ block.plsda <- function(X,
     result = internal_wrapper.mint.block(
         X = X,
         Y = Y,
+        W = W,
         indY = indY,
         ncomp = ncomp,
         design = design,

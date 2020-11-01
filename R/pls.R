@@ -52,6 +52,7 @@
 #' @param X Numeric matrix of predictors. \code{NA}s are allowed.
 #' @param Y Numeric vector or matrix of responses (for multi-response models).
 #' \code{NA}s are allowed.
+#' @param W named list of numeric matrices of weights. \code{NA}s are allowed.
 #' @param ncomp Integer, the number of components to include in the model. Default to 2.
 #' @param scale Logical. If scale = TRUE, each block is standardized to zero
 #' means and unit variances (default: TRUE)
@@ -135,6 +136,7 @@
 #' 
 pls <- function(X,
                 Y,
+                W = NULL,
                 ncomp = 2,
                 scale = TRUE,
                 mode = c("regression", "canonical", "invariant", "classic"),
@@ -150,6 +152,7 @@ pls <- function(X,
     result = internal_wrapper.mint(
         X = X,
         Y = Y,
+        W = W,
         ncomp = ncomp,
         scale = scale,
         near.zero.var = near.zero.var,

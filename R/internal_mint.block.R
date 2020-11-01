@@ -36,7 +36,7 @@
 ################################################################################
 
 internal_mint.block <- 
-    function (A, indY = NULL,  design = 1 - diag(length(A)),
+    function (A, W = NULL, indY = NULL,  design = 1 - diag(length(A)),
               tau=NULL,#rep(1, length(A)),
               ncomp = rep(1, length(A)), scheme = "horst", scale = TRUE,
               init = "svd.single", tol = 1e-06,
@@ -75,15 +75,34 @@ internal_mint.block <-
         # ind.NA.col: optional. which col have missing values? list,
         #   ind.NA.col[[q]] for each data set.
         
+        blocks <- names(A)
+        names(ncomp) <- blocks
         
-        names(ncomp) = names(A)
+        if (is.null(W))
+            W <- lapply(A, function(x) NULL)
+        else
+            if (!all(is.element(names(W), names(A))))
+                stop("'W' should be a named list containing all block names: ", paste(names(A), collapse = ', '))
+        W <- lapply(.name_list(blocks), FUN = function(j) {
+            if (is.null(W[[j]]))
+                return(matrix(1, ncol = ncol(A[[j]]), nrow = nrow(A[[j]])))
+            else
+                if (!identical(dim(W[[j]]), dim(A[[j]])) || !is.numeric(W[[j]]))
+                    stop("invalid W dimensions for block: ", j)
+            
+            W[[j]][is.na(W[[j]])] <- 0
+            
+            return(W[[j]])
+        })
         
-        
+
         # center the data per study, per matrix of A, scale if scale=TRUE, option
         mean_centered = lapply(A, function(x)
         {mean_centering_per_study(x, study, scale)})
         
         A = lapply(mean_centered, function(x){as.matrix(x$concat.data)})
+        
+        A <- lapply(X = .name_list(names(A)), FUN = function(j) A[[j]]*W[[j]])
         
         #save rownames study
         mean_centered.rownames.study = vector("list", nlevels(study))
@@ -235,7 +254,7 @@ internal_mint.block <-
                                                                         scheme = scheme, max.iter = max.iter, tol = tol,
                                                                         penalty = penalty,
                                                                         misdata=misdata, is.na.A=is.na.A, ind.NA = ind.NA,
-                                                                        all.outputs = all.outputs)
+                                                                        all.outputs = all.outputs, W = W)
                     } else {
                         mint.block.result = sparse.rgcca_iteration(R, design,
                                                                    tau = if (is.matrix(tau)){tau[comp, ]} else {"optimal"},
@@ -524,7 +543,7 @@ sparse.mint.block_iteration = function (A, design, study = NULL, loadings.A,
                                         keepA = NULL,
                                         scheme = "horst", max.iter = 100, tol = 1e-06,
                                         misdata = NULL, is.na.A = NULL, ind.NA = NULL,
-                                        penalty=NULL, all.outputs = FALSE)
+                                        penalty=NULL, all.outputs = FALSE, W = NULL)
 {
     
     # keepA is a list of length the number of blocks. Each entry is a vector of

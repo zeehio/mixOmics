@@ -88,6 +88,7 @@
 #' @export
 block.pls <- function(X,
                       Y,
+                      W = NULL,
                       indY,
                       ncomp = 2,
                       design,
@@ -102,7 +103,7 @@ block.pls <- function(X,
 {
     
     # call to 'internal_wrapper.mint.block'
-    result = internal_wrapper.mint.block(X=X, Y=Y, indY=indY, ncomp=ncomp,
+    result = internal_wrapper.mint.block(X=X, Y=Y, W = W, indY=indY, ncomp=ncomp,
                                          design=design, scheme=scheme, mode=mode, scale=scale,
                                          init=init, tol=tol, max.iter=max.iter ,near.zero.var=near.zero.var,
                                          all.outputs = all.outputs)

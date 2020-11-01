@@ -41,6 +41,7 @@
 internal_wrapper.mint.block <-
     function(X,
              Y,
+             W = NULL,
              indY,
              study,
              ncomp,
@@ -135,6 +136,7 @@ internal_wrapper.mint.block <-
                                    indY = indY,
                                    design = design,
                                    ncomp = ncomp,
+                                   W = W,
                                    scheme = scheme,
                                    scale = scale,
                                    init = init,

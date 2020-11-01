@@ -109,6 +109,7 @@
 #' @example ./examples/spls-examples.R
 spls <- function(X,
                  Y,
+                 W = NULL,
                  ncomp = 2,
                  mode = c("regression", "canonical", "invariant", "classic"),
                  keepX,
@@ -128,6 +129,7 @@ spls <- function(X,
     result <- internal_wrapper.mint(
         X = X,
         Y = Y,
+        W = W,
         ncomp = ncomp,
         scale = scale,
         near.zero.var = near.zero.var,
