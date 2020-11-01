@@ -233,13 +233,18 @@ scale.function_old <- function(temp, scale = TRUE)
 # used in mean_centering_per_study (below)
 # --------------------------------------
 #' @importFrom matrixStats colSds 
-scale.function <- function(temp, scale = TRUE)
+scale.function <- function(temp, w = NULL, scale = TRUE)
 {
-    meanX = colMeans(temp, na.rm = TRUE)
-    
+    if (!is.null(w))
+        meanX = sapply(seq_len(ncol(temp)), function(i) matrixStats::weightedMean(x = temp[, i], w = w[, i], na.rm = TRUE))
+    else
+        meanX = colMeans(temp, na.rm = TRUE)
     if (scale)
     {
-        sqrt.sdX = colSds(temp,  na.rm=TRUE)
+        if (!is.null(w))
+            sqrt.sdX = sapply(seq_len(ncol(temp)), function(i) matrixStats::weightedSd(x = temp[, i], w = w[, i], na.rm = TRUE))
+        else
+            sqrt.sdX = colSds(temp,  na.rm=TRUE)
         # first possiblity: scale(), too long
         # second possibility: matrix approach: transpose is too long
         # data.list.study.scale_i = t( (t(temp)-meanX) / sqrt.sdX)
@@ -273,7 +278,7 @@ scale.function <- function(temp, scale = TRUE)
 # --------------------------------------
 # Mean centering/scaling per study: used in 'internal_mint.block.R'
 # --------------------------------------
-mean_centering_per_study <- function(data, study, scale)
+mean_centering_per_study <- function(data, w = NULL, study, scale)
 {
     
     M = length(levels(study))   # number of groups
@@ -281,7 +286,7 @@ mean_centering_per_study <- function(data, study, scale)
     data.list.study = study_split(data, study)
     
     # center and scale data per group, and concatene the data
-    res = lapply(data.list.study, scale.function, scale = scale)
+    res = lapply(data.list.study, function(x) scale.function(x, scale = scale, w = w))
     
     meanX = lapply(res, function(x){x[[2]]})
     sqrt.sdX = lapply(res, function(x){x[[3]]})

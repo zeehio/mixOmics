@@ -97,8 +97,8 @@ internal_mint.block <-
         
 
         # center the data per study, per matrix of A, scale if scale=TRUE, option
-        mean_centered = lapply(A, function(x)
-        {mean_centering_per_study(x, study, scale)})
+        mean_centered = mapply(A, W, FUN = function(x, w)
+        {mean_centering_per_study(x, w, study, scale)}, SIMPLIFY = FALSE)
         
         A = lapply(mean_centered, function(x){as.matrix(x$concat.data)})
         
