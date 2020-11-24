@@ -2,9 +2,11 @@
 % Please edit documentation in R/circosPlot.R
 \name{circosPlot}
 \alias{circosPlot}
+\alias{circosPlot.block.splsda}
+\alias{circosPlot.block.spls}
 \title{circosPlot for DIABLO}
 \usage{
-circosPlot(
+\method{circosPlot}{block.splsda}(
   object,
   comp = 1:min(object$ncomp),
   cutoff,
@@ -21,12 +23,14 @@ circosPlot(
   legend = TRUE,
   ...
 )
+
+\method{circosPlot}{block.spls}(object, ..., group = NULL, Y.name = "Y")
 }
 \arguments{
-\item{object}{An object of class inheriting from \code{"block.splsda"}.}
+\item{object}{An object of class inheriting from \code{"block.splsda"} or
+\code{"blocks.spls"}.}
 
-\item{comp}{Numeric vector indicating which component to plot. Default to
-all}
+\item{comp}{Numeric vector indicating which component to plot. Default to all}
 
 \item{cutoff}{Only shows links with a correlation higher than \code{cutoff}}
 
@@ -66,6 +70,10 @@ see examples.}
  \item \bold{block.labels.adj} Numeric between -1 and 1. Adjusts the radial
  location of block names radially inward or outward. Default to 0.
 }}
+
+\item{group}{The grouping factor used when \code{line = TRUE}}
+
+\item{Y.name}{Character, the name of the \code{Y} block}
 }
 \value{
 If saved in an object, the circos plot will output the similarity
@@ -77,16 +85,16 @@ Displays variable correlation among different blocks
 }
 \details{
 \code{circosPlot} function depicts correlations of variables selected with
-\code{block.splsda} among different blocks, using a generalisation of the
-method presented in González et al 2012. If \code{ncomp} is specified, then
-only the variables selected on that component are displayed.
+\code{block.splsda} or \code{block.spls} among different blocks, using a
+generalisation of the method presented in González et al 2012. If
+\code{ncomp} is specified, then only the variables selected on that component
+are displayed.
 }
 \examples{
 data(nutrimouse)
 Y = nutrimouse$diet
 data = list(gene = nutrimouse$gene, lipid = nutrimouse$lipid)
 design = matrix(c(0,1,1,1,0,1,1,1,0), ncol = 3, nrow = 3, byrow = TRUE)
-
 
 nutrimouse.sgccda <- wrapper.sgccda(X=data,
 Y = Y,
@@ -121,6 +129,20 @@ circosPlot(nutrimouse.sgccda, cutoff = 0.7, line = TRUE, ncol.legend = 2,
 ## adjust feature and block names radially
 circosPlot(nutrimouse.sgccda, cutoff = 0.7, size.legend = 1.1)
 circosPlot(nutrimouse.sgccda, cutoff = 0.7, size.legend = 1.1, var.adj = 0.8, block.labels.adj = -0.5)
+
+## -- example with block.spls
+data("breast.TCGA")
+ncomp <- 2
+data = list(mrna = breast.TCGA$data.train$mrna, mirna = breast.TCGA$data.train$mirna)
+list.keepX = list(mrna = rep(20, 2), mirna = rep(10,2))
+list.keepY = c(rep(10, 2))
+
+TCGA.block.spls = block.spls(X = data, 
+                             Y = breast.TCGA$data.train$protein,
+                             ncomp = ncomp, keepX = list.keepX, 
+                             keepY = list.keepY, design = 'full')
+circosPlot.block.spls(TCGA.block.spls, group = breast.TCGA$data.train$subtype, cutoff = 0.7, Y.name = 'protein')
+
 }
 }
 \references{

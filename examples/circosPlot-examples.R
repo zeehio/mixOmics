@@ -3,7 +3,6 @@ Y = nutrimouse$diet
 data = list(gene = nutrimouse$gene, lipid = nutrimouse$lipid)
 design = matrix(c(0,1,1,1,0,1,1,1,0), ncol = 3, nrow = 3, byrow = TRUE)
 
-
 nutrimouse.sgccda <- wrapper.sgccda(X=data,
 Y = Y,
 design = design,
@@ -37,4 +36,17 @@ circosPlot(nutrimouse.sgccda, cutoff = 0.7, line = TRUE, ncol.legend = 2,
 ## adjust feature and block names radially
 circosPlot(nutrimouse.sgccda, cutoff = 0.7, size.legend = 1.1)
 circosPlot(nutrimouse.sgccda, cutoff = 0.7, size.legend = 1.1, var.adj = 0.8, block.labels.adj = -0.5)
+
+## -- example with block.spls
+data("breast.TCGA")
+ncomp <- 2
+data = list(mrna = breast.TCGA$data.train$mrna, mirna = breast.TCGA$data.train$mirna)
+list.keepX = list(mrna = rep(20, 2), mirna = rep(10,2))
+list.keepY = c(rep(10, 2))
+
+TCGA.block.spls = block.spls(X = data, 
+                             Y = breast.TCGA$data.train$protein,
+                             ncomp = ncomp, keepX = list.keepX, 
+                             keepY = list.keepY, design = 'full')
+circosPlot(TCGA.block.spls, group = breast.TCGA$data.train$subtype, cutoff = 0.7, Y.name = 'protein')
 }
