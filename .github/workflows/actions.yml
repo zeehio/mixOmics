@@ -30,6 +30,7 @@ jobs:
       r: ${{ steps.setup.outputs.r }}
       bioc: ${{ steps.setup.outputs.bioc }}
       dockerise: ${{ steps.setup.outputs.dockerise }}
+      docker_tag: ${{ steps.setup.outputs.docker_tag }}
     steps:
       - uses: rlespinasse/github-slug-action@v3.x
       - uses: r-lib/actions/setup-r@master
@@ -37,7 +38,7 @@ jobs:
         id: setup
         run: |
           BRANCH_NAME="${{ env.GITHUB_REF_SLUG }}"
-          # R and Bioc versions
+          ## R and Bioc versions
           Rscript -e "install.packages('BiocManager', Ncpus=2)"
           r_devel=$(Rscript -e "vm=BiocManager:::.version_map(); as.character(vm[vm\$BiocStatus == 'devel',]\$R)")
           r_release=$(Rscript -e "vm=BiocManager:::.version_map(); as.character(vm[vm\$BiocStatus == 'release',]\$R)")
@@ -55,8 +56,12 @@ jobs:
           ## Docker
           # Only Dockerise for 'master' or 'RELEASE_*' branches
           dockerise='false'
-          [[ $BRANCH_NAME == "master" || $BRANCH_NAME =~ "release_" ]] && dockerise='true'
+          [[ github.event_name != 'schedule' && ($BRANCH_NAME == "master" || $BRANCH_NAME =~ "release_") ]] && dockerise='true'
           echo ::set-output name=dockerise::$dockerise
+          # Docker tag is 'github' for master and the branch name for release branches
+          docker_tag="github"
+          [[ $BRANCH_NAME =~ "release_" ]] && docker_tag=$BRANCH_NAME
+          echo ::set-output name=docker_tag::$docker_tag
 
   R-CMD-check:
     needs: [gatekeeper, versions]
@@ -145,6 +150,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Check ✅ 
+        if: (!contains(github.event.head_commit.message, 'skip-check'))
         run: rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
 
@@ -152,7 +158,7 @@ jobs:
         if: github.event_name == 'schedule' && github.repository == 'mixOmicsTeam/mixOmics'
         env:
           _R_CHECK_CRAN_INCOMING_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran", "--ignore-vignettes", "--run-dontrun"), error_on = "warning", check_dir = "check/asCRAN", build_args = c("--no-build-vignettes"))
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran", "--ignore-vignettes", "--run-dontrun"), error_on = "never", check_dir = "check/asCRAN", build_args = c("--no-build-vignettes"))
         shell: Rscript {0}
       - name: BiocCheck 🧬 ✅
         if: github.event_name == 'schedule' && github.repository == 'mixOmicsTeam/mixOmics'
@@ -174,13 +180,13 @@ jobs:
         shell: bash
 
       - name: Push to DockerHub 📦
-        if: needs.versions.outputs.dockerise == 'true'
+        if: needs.versions.outputs.dockerise == 'true' && !contains(github.event.head_commit.message, 'skip-docker')
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: mixomicsteam/mixomics
-          tags: ${{ env.GITHUB_REF_SLUG }}
+          tags: ${{ needs.versions.outputs.docker_tag }}
           build_args: BIOC_VERSION=${{ needs.versions.outputs.bioc }} 
 
       - name: Test coverage 🔍
